@@ -4,14 +4,15 @@ import walkSync from 'walk-sync';
 import { join } from 'path';
 
 const fileGlobs = [
-  'app/**/*.css',
-  'addon/**/*.css',
-  'tests/**/*.css',
-  'vendor/**/*.css',
-  'app/**/*.scss',
-  'addon/**/*.scss',
-  'tests/**/*.scss',
-  'vendor/**/*.scss',
+  // 'app/**/*.css',
+  // 'addon/**/*.css',
+  // 'tests/**/*.css',
+  // 'vendor/**/*.css',
+  // 'app/**/*.scss',
+  // 'addon/**/*.scss',
+  // 'tests/**/*.scss',
+  // 'vendor/**/*.scss',
+  '**/*.css'
 ];
 
 const stylelintRegex = /stylelint-disable (.*) \*\//;
@@ -73,8 +74,24 @@ export function list(directory) {
   // directory
   const cwd = directory || process.cwd();
 
+  let ignoreFile;
+
+  try {
+    ignoreFile = readFileSync(join(cwd, '.gitignore'), 'utf8')
+      .split('\n')
+      .filter((line) => line.length)
+      .filter((line) => !line.startsWith('#'))
+      // walkSync can't handle these
+      .filter((line) => !line.startsWith('!'))
+      .map((line) => line.replace(/^\//, ''))
+      .map((line) => line.replace(/\/$/, '/*'));
+  } catch (e) {
+    // noop
+  }
+
   const files = walkSync(cwd, {
     globs: fileGlobs,
+    ignore: ignoreFile || ['**/node_modules/*'],
   });
 
   const output = {};
