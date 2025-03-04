@@ -38,7 +38,7 @@ function ignoreError(errors, filePath) {
     uniqueIds.sort((a, b) => a.localeCompare(b));
 
     const replacement = uniqueIds.length ? `/* stylelint-disable ${uniqueIds.join(', ')} */\n` : '';
-    writeFileSync(error.filePath, file.replace(/^.*\n/, replacement));
+    writeFileSync(filePath, file.replace(/^.*\n/, replacement));
   } else if (uniqueIds.length) {
     uniqueIds.sort((a, b) => a.localeCompare(b));
     writeFileSync(filePath, `/* stylelint-disable ${uniqueIds.join(', ')} */\n${file}`);
